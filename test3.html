@@ -115,9 +115,11 @@ function initialize() {
 	// import de toutes les données du GeoJson
 	data1 =new google.maps.Data();
 	data1.loadGeoJson('bat.geojson',{idPropertyName: 'id'});
-	data1.setMap(map);
+	data1.setMap(null);
 
-	test=data1.getFeatureById("1");
+	data2 =new google.maps.Data();
+	data2.add(data1.getFeatureById("1"));
+	data2.setMap(map);
 }
 
 </script>
@@ -131,6 +133,7 @@ function initialize() {
 		<input type="checkbox" name="écoles">Écoles<BR>
 		<input type="checkbox" name="culturels">Culturels<BR>
 		<input type="checkbox" name="religieux">Religieux<BR>
+		<input type="checkbox" name="...">...<BR>
 	</form>
 </div>
 <a href="http://www.valenciennes.fr/"><img id="logo" src="logo.png"></a>
