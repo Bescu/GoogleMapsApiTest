@@ -55,6 +55,10 @@ background-color: white;
 opacity: 0.8;
 }
 
+a img {
+border: 0;
+}
+
 </style>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false" ></script>
 
@@ -112,8 +116,6 @@ function initialize() {
 	data1 =new google.maps.Data();
 	data1.loadGeoJson('bat.geojson',{idPropertyName: 'id'});
 	data1.setMap(map);
-
-	test=data1.Feature.toString;
 
 }
 
