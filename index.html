@@ -1,42 +1,204 @@
 ﻿<!DOCTYPE  html>
 <html>
 <head>
+<title>Test API Google Maps</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <style type="text/css">
 html {
 height: 100%;
 }
+
 body {
 height: 100%;
+width: 100%;
 margin: 0px;
 padding: 0px;
+over-flow: auto;
 }
+
+h1 { 
+font-size: 20px;
+text-align: center;
+margin-bottom: 20px;
+}
+
 #map_canvas {
 height: 100%;
-width: 100%;
+z-index: 0;
 }
+
+#blocLegende {
+background-color: white;
+opacity: 0.8;
+position: absolute;
+left: 20px;
+top: 20px;
+width: 20%;
+z-index: 1;
+border-radius:16px;
+padding-left:10px;
+padding-bottom:10px;
+}
+
+input[type='checkbox'] {
+margin-bottom: 10px;
+}
+
+#logo {
+position: absolute;
+right: 0px;
+bottom: 13px;
+z-index: 1;
+width: 150px;
+background-color: white;
+opacity: 0.8;
+}
+
+a img {
+border: 0;
+}
+
 </style>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false" ></script>
+
+
 <script type="text/javascript">
+	
 function initialize() {
-	var latlng= new google.maps.LatLng(-28, 137.883);
+
+	// import de la carte OSM(Mapnik)
+	
+	osmMapType = new google.maps.ImageMapType({
+		getTileUrl: function(coord, zoom) {
+			return "http://tile.openstreetmap.org/" +
+			zoom + "/" + coord.x + "/" + coord.y + ".png";
+		},
+		tileSize: new google.maps.Size(256, 256),
+		isPng: true,
+		alt: "OpenStreetMap Mapnik layer",
+		name: "OSM",
+		maxZoom: 20
+	});
+
+	// import de la carte MapQuest
+	
+	mapQuestType = new google.maps.ImageMapType({
+		getTileUrl: function(coord, zoom) {
+			return "http://otile1.mqcdn.com/tiles/1.0.0/map/" +
+			zoom + "/" + coord.x + "/" + coord.y + ".png";
+		},
+		tileSize: new google.maps.Size(256, 256),
+		isPng: true,
+		alt: "MapQuest layer (données OSM)",
+		name: "MapQuest",
+		maxZoom: 20
+	});
+	
+	// chargement de l'application avec ses options
+	
+	var latlng = new google.maps.LatLng(50.3586, 3.5236);
 	var myOptions = {
-		zoom: 4,
+		zoom: 14,
+		minZoom: 13,
+		maxZoom: 18,
 		center: latlng,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
+		disableDefaultUI: true,
+		mapTypeControl: true,
+		mapTypeControlOptions: {mapTypeIds: [google.maps.MapTypeId.ROADMAP,google.maps.MapTypeId.SATELLITE,'OSM','MapQuest'],style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+		streetViewControl: true,
+		streetViewControlOptions: {position: google.maps.ControlPosition.RIGHT_TOP},
+		scaleControl: true,
+		zoomControl: true,
+		zoomControlOptions: {position: google.maps.ControlPosition.RIGHT_TOP},
+		mapTypeId: 'MapQuest'
 	};
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-	data1 =new google.maps.Data();
-	data1.loadGeoJson('https://storage.googleapis.com/maps-devrel/google.json');
+	map.mapTypes.set('OSM',osmMapType);
+	map.mapTypes.set('MapQuest',mapQuestType);
+
+	// fonction pour répartir les entités selon différentes couches selon leur type
 	
-	data1.forEach(function(feature) {
-		alert("test");
-	});
+	function splitData(AddFeatureEvent){
+		var feature = AddFeatureEvent.feature;
+		var genre = feature.getProperty("Genre");
+		var layer_index = (!layers[genre] || layers[genre]===undefined) ? "problems" : genre;
+		layers[layer_index][0].add(feature);
+	};
+	
+	// fonction lancée quand une checkbox est activée/désactivée
+	
+	function chbChange(event){
+		var elemInd = event.target.name;
+		var elemChk = event.target.checked;
+		if (elemChk) {
+			layers[elemInd][0].setMap(map);
+		}
+		else {
+			layers[elemInd][0].setMap(null);
+		};	
+	};
+	
+	// fonction lancée quand il y a un clic sur une entité
+	
+	function clic(event){
+		var htmlInfo = '<h3>' + event.feature.getProperty("Libelle") + '</h3>\n' + '<ul><li><em>Type : </em>' + layers[event.feature.getProperty("Genre")][2] + '</li>\n' + '<li><em>Adresse : </em>' +
+		event.feature.getProperty("Num_1") + ' ' + event.feature.getProperty("Typ_Voie") + ' ' + event.feature.getProperty("Voie") + '</li></ul>';
+		var infoWindow = new google.maps.InfoWindow({ content : htmlInfo, position: event.latLng});
+		infoWindow.open(map);
+	};
+	
+	// Création des couches thématiques dans un objet contenant plusieurs array : [0] = création de l'objet Data ; [1] = lien logo ; [2] = Nom à afficher dans la légende
+	
+	layers = {
+		administratif: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|176dee" , "Administratif"],
+		associatif: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|d4412c" , "Associatif"],
+		culture: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|009b58" , "Culturels"],
+		ecole: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|07f7e9" , "Écoles"],
+		petite_enfance: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|38ed00" , "Petite enfance"],
+		social: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|f39b1d" , "Social"],
+		sports: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|a63e0b" , "Sports"],
+		cultuel: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ffb606" , "Religieux"],
+		divers: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ed21d3" ,  "Divers"]
+	};
+	
+	var htmlLegende = ''; // variable accueillant le code HTML qui va créer la légende
+	
+	for (index in layers){
+		layers[index][0].setMap(map); // affichage des couches sur la carte
+		layers[index][0].setStyle({icon:layers[index][1]}); // défini l'icone de chaque couche
+		layers[index][0].addListener('click',clic); // ajout d'un événement clic sur les entités
+		htmlLegende = htmlLegende + '<input type="checkbox" name="' + index + '" checked="checked">' + layers[index][2] + '<BR>\n'; // construit le code HTML de la légende
+		
+	};
+	
+	// intégration du code de la légende dans le HTML
+	
+	document.getElementById("legende").innerHTML=htmlLegende;
+	
+	// ajout des événement sur les checkbox
+	
+	for (index in layers){
+		document.getElementsByName(index)[0].addEventListener("change",chbChange);
+	};
+
+	
+	// import de toutes les données du GeoJson et de l'évenement à chaque ajout dans data1
+	
+	data1 = new google.maps.Data();
+	data1.addListener('addfeature',splitData);
+	data1.loadGeoJson('bati.geojson');	
 }
+
 </script>
 </head>
 <body onload="initialize()">
 <div id="map_canvas"></div>
+<div id="blocLegende">
+	<h1>Les bâtiments communaux de Valenciennes</h1>
+	<form id="legende">
+	</form>
+</div>
+<a href="http://www.valenciennes.fr/"><img id="logo" src="logo.png"></a>
 </body>
 </html>
