@@ -261,7 +261,15 @@ function initialize() {
 	
 	data1 = new google.maps.Data();
 	data1.addListener('addfeature',splitData);
-	data1.loadGeoJson('bati.geojson');	
+	data1.loadGeoJson('bati.geojson');
+	
+	// import du masque des communes voisines
+	
+	dataCom = new google.maps.Data();
+	dataCom.loadGeoJson('com.geojson');
+	dataCom.setStyle({fillOpacity:0.4,strokeWeight:0.5,strokeColor:"white",clickable:false});
+	dataCom.setMap(map);
+	
 }
 
 </script>
