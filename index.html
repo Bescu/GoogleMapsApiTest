@@ -59,6 +59,21 @@ a img {
 border: 0;
 }
 
+.infoWindow * {
+padding: 0;
+margin: 0;
+width: 200px;
+}
+
+.type {
+font-size: 10px;
+margin-bottom: 3px;
+}
+
+#listeAttributs {
+margin-top: 10px;
+}
+
 </style>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false" ></script>
 
@@ -117,6 +132,24 @@ function initialize() {
 	map.mapTypes.set('OSM',osmMapType);
 	map.mapTypes.set('MapQuest',mapQuestType);
 
+	// fonction pour supprimer une infowindow ouverte et/ou l'animation d'un marqueur
+	
+	function resetInfAni(){
+	
+		// si une fenêtre d'information est déjà ouverte, on la ferme
+		
+		if (typeof infoWindow != 'undefined') {
+			infoWindow.close();
+		};
+		
+		// s'il y a encore un marker animé, le supprimer et remettre le feature d'origine
+		
+		if (typeof marker != 'undefined' && marker.getMap() != 'null') {
+			featureAnim.setGeometry({lat:latFeat,lng:lngFeat});
+			marker.setMap(null);
+		};
+	};
+	
 	// fonction pour répartir les entités selon différentes couches selon leur type
 	
 	function splitData(AddFeatureEvent){
@@ -129,6 +162,13 @@ function initialize() {
 	// fonction lancée quand une checkbox est activée/désactivée
 	
 	function chbChange(event){
+	
+		// si une fenêtre d'information est déjà ouverte ou un marqueur animé on les ferme
+		
+		resetInfAni();
+		
+		// affichage ou désactivation de la couche concernée
+		
 		var elemInd = event.target.name;
 		var elemChk = event.target.checked;
 		if (elemChk) {
@@ -142,10 +182,44 @@ function initialize() {
 	// fonction lancée quand il y a un clic sur une entité
 	
 	function clic(event){
-		var htmlInfo = '<h3>' + event.feature.getProperty("Libelle") + '</h3>\n' + '<ul><li><em>Type : </em>' + layers[event.feature.getProperty("Genre")][2] + '</li>\n' + '<li><em>Adresse : </em>' +
-		event.feature.getProperty("Num_1") + ' ' + event.feature.getProperty("Typ_Voie") + ' ' + event.feature.getProperty("Voie") + '</li></ul>';
-		var infoWindow = new google.maps.InfoWindow({ content : htmlInfo, position: event.latLng});
+		
+		// si une fenêtre d'information est déjà ouverte ou un marqueur animé on les ferme
+		
+		resetInfAni();
+		
+		// construction du code HTML à insérer dans la fenêtre d'information avec des règles de conditions (si numéro = 0 alors on ne l'affiche pas, etc.)
+		
+		var htmlInfo = '<div class="infoWindow">\n<h3>' + event.feature.getProperty("Libelle") + '</h3>\n' + '<p class="type"><em>Type : ' +
+		layers[event.feature.getProperty("Genre")][2] + '</em></p>\n<hr>\n<ul id="listeAttributs">\n' + '<li><b>Adresse :</b> ';
+		if (event.feature.getProperty("Num_1")!=0) {
+		htmlInfo = htmlInfo + event.feature.getProperty("Num_1");
+		};
+		if (event.feature.getProperty("Typ_Voie")) {
+		htmlInfo = htmlInfo + ' ' +	event.feature.getProperty("Typ_Voie");
+		};
+		if (event.feature.getProperty("Voie")) {
+		htmlInfo = htmlInfo + ' ' + event.feature.getProperty("Voie") + '</li>\n</ul>\n</div>';
+		};
+		
+		// création et ouverture de la fenêtre d'information
+
+		infoWindow = new google.maps.InfoWindow({ content: htmlInfo, position: event.latLng, pixelOffset: {width:0, height:-40}});
 		infoWindow.open(map);
+		infoWindow.addListener("closeclick",resetInfAni);
+		
+		// animation de l'icone
+		
+		latFeat = event.latLng.lat();
+		lngFeat = event.latLng.lng();
+		featureAnim = event.feature;
+		featureAnim.setGeometry(0,0); // je déplace le feature pour qu'il ne soit plus visible sur la carte
+		marker = new google.maps.Marker({position:{lat:latFeat,lng:lngFeat},map:map,icon:layers[featureAnim.getProperty("Genre")][1],animation: google.maps.Animation.BOUNCE}); // je créé un marker animé qui le remplace
+		
+		// Si on veut que l'animation s'arrête au bout d'un moment :
+		/*setTimeout(function(){
+			marker.setMap(null);
+			featureAnim.setGeometry({lat:latFeat,lng:lngFeat});
+			},2850);*/
 	};
 	
 	// Création des couches thématiques dans un objet contenant plusieurs array : [0] = création de l'objet Data ; [1] = lien logo ; [2] = Nom à afficher dans la légende
