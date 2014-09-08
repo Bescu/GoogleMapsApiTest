@@ -15,12 +15,12 @@
 	input[type='checkbox'] {
 	margin: 0;
 	padding: 0;
-	width: 8px;
-	height: 8px;
+	width: 6px;
+	height: 6px;
 	}
 	
 	#titreLegende {
-	font-size: 9px;
+	font-size: 7px;
 	margin: 5px;
 	padding: 0;
 	}
@@ -28,6 +28,33 @@
 	#blocLegende {
 	margin: 0;
 	padding: 0;
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	}
+	
+	#titreInfo {
+	font-size: 7px;
+	}
+	
+	.type {
+	font-size: 5px;
+	margin-bottom: 3px;
+	}
+
+	#listeAttributs {
+	font-size: 6px;
+	margin-top: 4px;
+	}
+	   
+	#logo {
+	width: 50px;
+	}
+	
+	.infoWindow * {
+	padding: 0;
+	margin: 0;
+	width: 100px;
 	}
 }
 
@@ -61,7 +88,7 @@ position: absolute;
 left: 20px;
 top: 20px;
 width: 20%;
-min-width: 100px;
+min-width: 70px;
 max-width: 350px;
 z-index: 1;
 border-radius:16px;
@@ -218,7 +245,7 @@ function initialize() {
 		
 		// construction du code HTML à insérer dans la fenêtre d'information avec des règles de conditions (si numéro = 0 alors on ne l'affiche pas, etc.)
 		
-		var htmlInfo = '<div class="infoWindow">\n<h3>' + event.feature.getProperty("Libelle") + '</h3>\n' + '<p class="type"><em>Type : ' +
+		var htmlInfo = '<div class="infoWindow">\n<h3 id="titreInfo">' + event.feature.getProperty("Libelle") + '</h3>\n' + '<p class="type"><em>Type : ' +
 		layers[event.feature.getProperty("Genre")][2] + '</em></p>\n<hr>\n<ul id="listeAttributs">\n' + '<li><b>Adresse :</b> ';
 		if (event.feature.getProperty("Num_1")!=0) {
 		htmlInfo = htmlInfo + event.feature.getProperty("Num_1");
