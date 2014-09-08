@@ -7,7 +7,7 @@
 <link rel='stylesheet' media='(max-width: 700px)' href='petiteTaille.css'/>
 <link rel='stylesheet' media='(min-width: 701px)' href='normal.css'/>
 
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false" ></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true" ></script>
 
 
 <script type="text/javascript">
@@ -145,7 +145,7 @@ function initialize() {
 		lngFeat = event.latLng.lng();
 		featureAnim = event.feature;
 		featureAnim.setGeometry(0,0); // je déplace le feature pour qu'il ne soit plus visible sur la carte
-		marker = new google.maps.Marker({position:{lat:latFeat,lng:lngFeat},map:map,icon:layers[featureAnim.getProperty("Genre")][1],animation: google.maps.Animation.BOUNCE}); // je créé un marker animé qui le remplace
+		marker = new google.maps.Marker({position:{lat:latFeat,lng:lngFeat},map:map,icon:{url: layers[featureAnim.getProperty("Genre")][1], scaledSize: sizeIcon},animation: google.maps.Animation.BOUNCE}); // je créé un marker animé qui le remplace
 		
 		// Si on veut que l'animation s'arrête au bout d'un moment :
 		/*setTimeout(function(){
@@ -156,23 +156,25 @@ function initialize() {
 	
 	// Création des couches thématiques dans un objet contenant plusieurs array : [0] = création de l'objet Data ; [1] = lien logo ; [2] = Nom à afficher dans la légende
 	
+	
 	layers = {
-		administratif: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|176dee" , "Administratif"],
-		associatif: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|d4412c" , "Associatif"],
-		culture: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|009b58" , "Culturels"],
-		ecole: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|07f7e9" , "Écoles"],
-		petite_enfance: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|38ed00" , "Petite enfance"],
-		social: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|f39b1d" , "Social"],
-		sports: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|a63e0b" , "Sports"],
-		cultuel: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ffb606" , "Religieux"],
-		divers: [ new google.maps.Data(), "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ed21d3" ,  "Divers"]
+		administratif: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-f21164/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/congress.png" , "Administratif"],
+		associatif: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-087519/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/family.png" , "Associatif"],
+		culture: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/art-museum-2.png" , "Culturels"],
+		ecole: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-1a16e3/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/school.png" , "Écoles"],
+		petite_enfance: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-ffc11f/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/nanny.png" , "Petite enfance"],
+		social: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-46a1f0/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/sozialeeinrichtung.png" , "Social"],
+		sports: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-ff8a22/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/jogging.png" , "Sports"],
+		cultuel: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-66c547/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/church-2.png" , "Religieux"],
+		divers: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-a8a8a8/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/test-2.png" ,  "Divers"]
 	};
 	
 	var htmlLegende = ''; // variable accueillant le code HTML qui va créer la légende
+	var sizeIcon = new google.maps.Size(28,32); // taille des icones
 	
 	for (index in layers){
 		layers[index][0].setMap(map); // affichage des couches sur la carte
-		layers[index][0].setStyle({icon:layers[index][1]}); // défini l'icone de chaque couche
+		layers[index][0].setStyle({icon:{url: layers[index][1], scaledSize: sizeIcon}}); // défini l'icone de chaque couche
 		layers[index][0].addListener('click',clic); // ajout d'un événement clic sur les entités
 		htmlLegende = htmlLegende + '<input type="checkbox" name="' + index + '" checked="checked">' + layers[index][2] + '<BR>\n'; // construit le code HTML de la légende
 		
