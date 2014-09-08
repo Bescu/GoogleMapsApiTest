@@ -2,9 +2,19 @@
 <html>
 <head>
 <title>Test API Google Maps</title>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <style type="text/css">
+@media max-width: 700px{
+	#legende{
+	font-size: 4px;
+	}
+	
+	h1 {
+	font-size: 6px;
+	}
+}
+
 html {
 height: 100%;
 }
@@ -18,7 +28,7 @@ over-flow: auto;
 }
 
 h1 { 
-font-size: 1.5vw;
+font-size: 20px;
 text-align: center;
 margin-bottom: 20px;
 }
@@ -35,6 +45,8 @@ position: absolute;
 left: 20px;
 top: 20px;
 width: 20%;
+min-width: 150px;
+max-width: 350px;
 z-index: 1;
 border-radius:16px;
 padding-left:10px;
@@ -42,7 +54,7 @@ padding-bottom:10px;
 }
 
 input[type='checkbox'] {
-margin-bottom: 3%;
+margin-bottom: 10px;
 }
 
 #logo {
@@ -72,10 +84,6 @@ margin-bottom: 3px;
 
 #listeAttributs {
 margin-top: 10px;
-}
-
-#legende {
-font-size: 0.9vw;
 }
 
 </style>
