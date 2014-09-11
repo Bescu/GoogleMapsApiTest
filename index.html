@@ -9,7 +9,6 @@
 
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true" ></script>
 
-
 <script type="text/javascript">
 	
 function initialize() {
@@ -93,7 +92,7 @@ function initialize() {
 	
 	// fonction lancée quand une checkbox est activée/désactivée
 	
-	function chbChange(event){
+	function legClic(event){
 	
 		// si une fenêtre d'information est déjà ouverte ou un marqueur animé on les ferme
 		
@@ -102,12 +101,16 @@ function initialize() {
 		// affichage ou désactivation de la couche concernée
 		
 		var elemInd = event.target.name;
-		var elemChk = event.target.checked;
-		if (elemChk) {
-			layers[elemInd][0].setMap(map);
+		var elemClass = event.target.className;
+		if (elemClass == 'imgLegend') {
+			layers[elemInd][0].setMap(null);
+			var elem=document.getElementsByName(elemInd)[0];
+			elem.className = 'imgLegendClicked';
 		}
 		else {
-			layers[elemInd][0].setMap(null);
+			layers[elemInd][0].setMap(map);
+			var elem=document.getElementsByName(elemInd)[0];
+			elem.className = 'imgLegend';
 		};	
 	};
 	
@@ -154,19 +157,24 @@ function initialize() {
 			},2850);*/
 	};
 	
+	// fonction lancée quand il y a survol d'une entité
+	
+	function elemOver(event){
+		console.log(event.feature.getProperty("Libelle"));
+	};
+	
 	// Création des couches thématiques dans un objet contenant plusieurs array : [0] = création de l'objet Data ; [1] = lien logo ; [2] = Nom à afficher dans la légende
 	
-	
 	layers = {
-		administratif: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-f21164/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/congress.png" , "Administratif"],
-		associatif: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-087519/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/family.png" , "Associatif"],
-		culture: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/art-museum-2.png" , "Culturels"],
-		ecole: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-1a16e3/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/school.png" , "Écoles"],
-		petite_enfance: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-ffc11f/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/nanny.png" , "Petite enfance"],
-		social: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-46a1f0/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/sozialeeinrichtung.png" , "Social"],
-		sports: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-ff8a22/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/jogging.png" , "Sports"],
-		cultuel: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-66c547/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/church-2.png" , "Religieux"],
-		divers: [ new google.maps.Data(), "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-a8a8a8/shapecolor-color/shadow-1/border-black/symbolstyle-contrast/symbolshadowstyle-no/gradient-no/test-2.png" ,  "Divers"]
+		administratif: [ new google.maps.Data(), "img/congress.png" , "Administratif"],
+		associatif: [ new google.maps.Data(), "img/family.png" , "Associatif"],
+		culture: [ new google.maps.Data(), "img/art-museum-2.png" , "Culturels"],
+		ecole: [ new google.maps.Data(), "img/school.png" , "Écoles"],
+		petite_enfance: [ new google.maps.Data(), "img/nanny.png" , "Petite enfance"],
+		social: [ new google.maps.Data(), "img/sozialeeinrichtung.png" , "Social"],
+		sports: [ new google.maps.Data(), "img/jogging.png" , "Sports"],
+		cultuel: [ new google.maps.Data(), "img/church-2.png" , "Religieux"],
+		divers: [ new google.maps.Data(), "img/test-2.png" ,  "Divers"]
 	};
 	
 	var htmlLegende = ''; // variable accueillant le code HTML qui va créer la légende
@@ -176,20 +184,19 @@ function initialize() {
 		layers[index][0].setMap(map); // affichage des couches sur la carte
 		layers[index][0].setStyle({icon:{url: layers[index][1], scaledSize: sizeIcon}}); // défini l'icone de chaque couche
 		layers[index][0].addListener('click',clic); // ajout d'un événement clic sur les entités
-		htmlLegende = htmlLegende + '<input type="checkbox" name="' + index + '" checked="checked">' + layers[index][2] + '<BR>\n'; // construit le code HTML de la légende
-		
+		layers[index][0].addListener('mouseover',elemOver); // ajout d'un événement survol sur les entités
+		htmlLegende = htmlLegende + '<img class="imgLegend" src="' + layers[index][1] +'" name="' + index + '"> ' + layers[index][2] + '<BR>\n'; // construit le code HTML de la légende
 	};
 	
 	// intégration du code de la légende dans le HTML
 	
 	document.getElementById("legende").innerHTML=htmlLegende;
 	
-	// ajout des événement sur les checkbox
+	// ajout des événement sur les images de la légende
 	
 	for (index in layers){
-		document.getElementsByName(index)[0].addEventListener("change",chbChange);
+		document.getElementsByName(index)[0].addEventListener("click",legClic);
 	};
-
 	
 	// import de toutes les données du GeoJson et de l'évenement à chaque ajout dans data1
 	

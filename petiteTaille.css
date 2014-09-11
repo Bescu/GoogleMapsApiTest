@@ -11,7 +11,7 @@ over-flow: auto;
 }
 
 h1 { 
-font-size: 7px;
+font-size: 8px;
 text-align: center;
 margin: 5px;
 padding: 0;
@@ -47,8 +47,21 @@ width: 6px;
 height: 6px;
 }
 
+.imgLegend{
+width: 7px;
+vertical-align:middle;
+cursor:pointer;
+}
+
+.imgLegendClicked{
+width: 7px;
+vertical-align:middle;
+opacity: 0.2;
+cursor:pointer;
+}
+
 #legende {
-font-size: 5px;
+font-size: 7px;
 }
 
 #logo {
@@ -72,15 +85,15 @@ width: 100px;
 }
 
 .type {
-font-size: 5px;
+font-size: 6px;
 margin-bottom: 3px;
 }
 
 h3 { 
-font-size: 6px;
+font-size: 8px;
 }
 
 #listeAttributs {
-font-size: 6px;
+font-size: 7px;
 margin-top: 4px;
 }

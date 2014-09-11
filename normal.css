@@ -41,6 +41,19 @@ input[type='checkbox'] {
 margin-bottom: 10px;
 }
 
+.imgLegend{
+width: 22px;
+vertical-align:middle;
+cursor:pointer;
+}
+
+.imgLegendClicked{
+width: 22px;
+vertical-align:middle;
+opacity: 0.2;
+cursor:pointer;
+}
+
 #logo {
 position: absolute;
 right: 0px;
